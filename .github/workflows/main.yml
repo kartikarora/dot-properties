@@ -1,0 +1,110 @@
+name: Test action
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    # test 1
+    - name: Read first property
+      id: read_first_property
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'foo'
+    - name: Do something with the property value
+      run: echo ${{ steps.read_first_property.outputs.foo }}
+    - name: Fail if first property has not been read correctly
+      if: steps.read_first_property.outputs.foo != 'bar'
+      run: exit 1
+
+    # test 2
+    - name: Read second property
+      id: read_second_property
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'foo.bar'
+    - name: Fail if second property has not been read correctly
+      if: steps.read_second_property.outputs.foo-bar != 'foobar'
+      run: exit 1
+
+    # test 3
+    - name: Read third property
+      id: read_third_property
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'foo.bar.foo'
+    - name: Fail if third property has not been read correctly
+      if: steps.read_third_property.outputs.foo-bar-foo != 'foo bar'
+      run: exit 1
+
+    # test 4: properties with spaces around the equals sign.
+    - name: Read property with spaces
+      id: read_property_with_spaces
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'with.space'
+    - name: Fail if property with spaces has not been read correctly
+      if: steps.read_property_with_spaces.outputs.with-space != '42'
+      run: exit 1
+
+    # test 5: read multiple properties
+    - name: Read multiple properties
+      id: read_multiple_properties
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'foo foo.bar'
+    - name: Fail if multiple properties have not been read correctly
+      if: steps.read_multiple_properties.outputs.foo != 'bar'
+        || steps.read_multiple_properties.outputs.foo-bar != 'foobar'
+      run: exit 1
+
+    # test 6 add entry
+    - name: Add new entry
+      uses: ./
+      with:
+        write-path: './foo.properties'
+        write-properties: 'new.entry'
+        write-values: 'yyy'
+    - name: Print properties file
+      run: cat ./foo.properties
+    - name: Read added property
+      id: read_added_property
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'new.entry'
+    - name: Fail if added property does not have a new value
+      if: steps.read_added_property.outputs.new-entry != 'yyy'
+      run: exit 1
+
+    # test 7 add multiple entries
+    - name: Add mutliple entries
+      uses: ./
+      with:
+        write-path: './foo.properties'
+        write-properties: |-
+          new.entry1
+          new.entry2
+        write-values: |-
+          aaa
+          aaa bbb
+    - name: Print properties file
+      run: cat ./foo.properties
+    - name: Read added properties
+      id: read_added_properties
+      uses: ./
+      with:
+        read-path: './foo.properties'
+        read-properties: 'new.entry1 new.entry2'
+    - name: Fail if added properties does not have new values
+      if: steps.read_added_properties.outputs.new-entry1 != 'aaa'
+        || steps.read_added_properties.outputs.new-entry2 != 'aaa bbb'
+      run: exit 1

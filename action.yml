@@ -1,19 +1,26 @@
-name: Read Properties
-description: Read property from java properties files.
-author: Christian Dräger
+name: Dot Properties
+description: Read from or write to a .properties files.
+author: Kartik
 branding:
   icon: 'list'
-  color: 'yellow'
+  color: 'blue'
 inputs:
-  path:
-    description: 'The path to properties file to read'
-    required: true
-  properties:
+  read-path:
+    description: 'The path to properties file to read from'
+  read-properties:
     description: 'The properties you want to read. Space separated'
-    required: true
+  write-path:
+    description: 'The path to properties file to write to'
+  write-properties:
+    description: 'The properties keys you want to write. Accepts an array'
+  write-values:
+    description: 'The property values you want to write (same order as the keys). Accepts an array.'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.path }}
-    - ${{ inputs.properties }}
+    - ${{ inputs.read-path }}
+    - ${{ inputs.read-properties }}
+    - ${{ inputs.write-path }}
+    - ${{ inputs.write-properties }}
+    - ${{ inputs.write-values }}

@@ -1,5 +1,10 @@
-FROM alpine:3.11
-COPY entrypoint.sh /usr/bin/
+FROM alpine:latest
+
+WORKDIR /app
+COPY . /app
+
 RUN apk add --no-cache bash
-RUN ln -s /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+
+RUN chmod +x /app/main.sh
+
+ENTRYPOINT [ "/app/main.sh" ]
