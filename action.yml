@@ -1,26 +1,25 @@
-name: Dot Properties
-description: Read from or write to a .properties files.
-author: Kartik
+name: "Dot Properties"
+description: "Read from or write to a .properties files"
+author: "Kartik Arora <@kartikarora>"
 branding:
-  icon: 'list'
-  color: 'blue'
+  icon: "list"
+  color: "black"
 inputs:
   read-path:
-    description: 'The path to properties file to read from'
+    description: "The path to properties file to read from"
   read-properties:
-    description: 'The properties you want to read. Space separated'
+    description: "The properties you want to read. Space separated"
   write-path:
-    description: 'The path to properties file to write to'
+    description: "The path to properties file to write to"
   write-properties:
-    description: 'The properties keys you want to write. Accepts an array'
+    description: "The properties keys you want to write. Accepts an array"
   write-values:
-    description: 'The property values you want to write (same order as the keys). Accepts an array.'
+    description: "The property values you want to write (same order as the keys). Accepts an array."
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.read-path }}
-    - ${{ inputs.read-properties }}
-    - ${{ inputs.write-path }}
-    - ${{ inputs.write-properties }}
-    - ${{ inputs.write-values }}
+  using: composite
+  steps:
+    - name: Run script
+      shell: bash
+      run: |
+        chmod +x ./main.sh
+        ./main.sh "${{ inputs.read-path }}" "${{ inputs.read-properties }}" "${{ inputs.write-path }}" "${{ inputs.write-properties }}" "${{ inputs.write-values }}"
